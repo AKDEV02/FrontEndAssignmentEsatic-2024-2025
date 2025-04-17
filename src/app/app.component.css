@@ -1,0 +1,187 @@
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+html, body { 
+  height: 100%; 
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #f5f5f5;
+}
+
+/* Classes pour les notifications */
+.success-snackbar {
+  background-color: #4caf50;
+  color: white;
+}
+
+.error-snackbar {
+  background-color: #f44336;
+  color: white;
+}
+
+.info-snackbar {
+  background-color: #2196f3;
+  color: white;
+}
+
+/* Styles utilitaires communs */
+.full-width {
+  width: 100%;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Animation de transition */
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Responsive breakpoints */
+@media (max-width: 599px) {
+  .hide-xs {
+    display: none !important;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 959px) {
+  .hide-sm {
+    display: none !important;
+  }
+}
+
+@media (min-width: 960px) and (max-width: 1279px) {
+  .hide-md {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .hide-lg {
+    display: none !important;
+  }
+}
+
+/* Styles pour les boutons de pagination */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 16px 0;
+}
+
+.pagination-controls button {
+  margin: 0 4px;
+}
+
+/* Styles pour les statuts des assignments */
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-submitted {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #2E7D32;
+}
+
+.status-pending {
+  background-color: rgba(255, 152, 0, 0.2);
+  color: #E65100;
+}
+
+.status-late {
+  background-color: rgba(244, 67, 54, 0.2);
+  color: #C62828;
+}
+
+/* Styles pour les formulaires */
+.form-container {
+  padding: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.form-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.form-row > * {
+  flex: 1;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+/* Styles pour les tableaux */
+.table-container {
+  overflow-x: auto;
+  margin-bottom: 24px;
+  border-radius: 4px;
+}
+
+.custom-table {
+  width: 100%;
+}
+
+.custom-table th {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.87);
+  background-color: #f5f5f5;
+}
+
+.custom-table td, .custom-table th {
+  padding: 12px 16px;
+}
+
+.custom-table tr:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}

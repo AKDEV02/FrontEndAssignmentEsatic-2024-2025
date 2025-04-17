@@ -1,0 +1,85 @@
+<mat-nav-list>
+  <!-- Menu pour les administrateurs -->
+  <ng-container *ngIf="authService.isAdmin()">
+
+    <div class="nav-section-title">Administration</div>
+    <mat-divider></mat-divider>
+
+    <a mat-list-item routerLink="/dashboard" routerLinkActive="active">
+        <mat-icon>dashboard</mat-icon>
+        <span>Tableau de bord</span>
+      </a>
+      
+      <a mat-list-item routerLink="/assignments" routerLinkActive="active">
+        <mat-icon>assignment</mat-icon>
+        <span>Assignments</span>
+      </a>
+    
+    <a mat-list-item routerLink="/admin/subjects" routerLinkActive="active">
+      <mat-icon>school</mat-icon>
+      <span>Matières</span>
+    </a>
+    
+    <a mat-list-item routerLink="/admin/teachers" routerLinkActive="active">
+      <mat-icon>person</mat-icon>
+      <span>Professeurs</span>
+    </a>
+    
+    <a mat-list-item routerLink="/admin/users" routerLinkActive="active">
+      <mat-icon>people</mat-icon>
+      <span>Utilisateurs</span>
+    </a>
+  </ng-container>
+  
+  <!-- Menu pour les professeurs -->
+  <ng-container *ngIf="authService.isTeacher()">
+    <div class="nav-section-title">Espace Professeur</div>
+
+    <mat-divider></mat-divider>
+    
+    <a mat-list-item routerLink="/teacher" routerLinkActive="active">
+      <mat-icon>dashboard</mat-icon>
+      <span>Tableau de bord</span>
+    </a>
+    
+    <a mat-list-item routerLink="/teacher/assignments" routerLinkActive="active">
+      <mat-icon>assignment</mat-icon>
+      <span>Mes Assignments</span>
+    </a>
+    
+    <a mat-list-item routerLink="/teacher/students" routerLinkActive="active">
+      <mat-icon>people</mat-icon>
+      <span>Mes Étudiants</span>
+    </a>
+  </ng-container>
+  
+  <!-- Menu pour les étudiants -->
+  <ng-container *ngIf="authService.isStudent()">
+    <div class="nav-section-title">Espace Étudiant</div>
+
+    <mat-divider></mat-divider>
+    
+    <a mat-list-item routerLink="/student" routerLinkActive="active">
+      <mat-icon>dashboard</mat-icon>
+      <span>Tableau de bord</span>
+    </a>
+    
+    <a mat-list-item routerLink="/student/assignments" routerLinkActive="active">
+      <mat-icon>assignment</mat-icon>
+      <span>Mes Assignments</span>
+    </a>
+  </ng-container>
+  
+  <!-- Profil et déconnexion -->
+  <mat-divider></mat-divider>
+  
+  <a mat-list-item routerLink="/profile" routerLinkActive="active">
+    <mat-icon>account_circle</mat-icon>
+    <span>Mon Profil</span>
+  </a>
+  
+  <a mat-list-item (click)="logout()">
+    <mat-icon>exit_to_app</mat-icon>
+    <span>Déconnexion</span>
+  </a>
+</mat-nav-list>

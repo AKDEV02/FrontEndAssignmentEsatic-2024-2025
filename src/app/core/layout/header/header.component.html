@@ -1,0 +1,37 @@
+<mat-toolbar color="primary" class="header">
+    <button mat-icon-button (click)="toggleMenu()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    
+    <span class="app-title">Application de Gestion des Assignments ESATIC</span>
+    
+    <span class="spacer"></span>
+    
+    <ng-container *ngIf="authService.isLoggedIn(); else loginButton">
+      <button mat-button [matMenuTriggerFor]="userMenu" class="user-button">
+        <mat-icon>account_circle</mat-icon>
+        <span>{{ authService.getCurrentUser()?.username }}</span>
+      </button>
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item routerLink="/profile">
+          <mat-icon>person</mat-icon>
+          <span>Profil</span>
+        </button>
+        <button mat-menu-item *ngIf="authService.isAdmin()" routerLink="/admin">
+          <mat-icon>admin_panel_settings</mat-icon>
+          <span>Administration</span>
+        </button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>exit_to_app</mat-icon>
+          <span>Déconnexion</span>
+        </button>
+      </mat-menu>
+    </ng-container>
+    
+    <ng-template #loginButton>
+      <button mat-button routerLink="/auth/login">
+        <mat-icon>login</mat-icon>
+        <span>Connexion</span>
+      </button>
+    </ng-template>
+  </mat-toolbar>

@@ -1,0 +1,186 @@
+<div class="assignments-container">
+    <div class="page-header">
+      <h1 class="mat-headline-4">Mes Assignments</h1>
+    </div>
+    
+    <div class="loading-indicator" *ngIf="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Chargement de vos assignments...</p>
+    </div>
+    
+    <div class="assignments-content" *ngIf="!loading">
+      <div class="search-container">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Rechercher un assignment</mat-label>
+          <input matInput [(ngModel)]="searchText" placeholder="Nom de l'assignment, matière...">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+      
+      <mat-tab-group animationDuration="300ms">
+        <mat-tab label="À faire" [disabled]="pendingAssignments.length === 0">
+          <div class="tab-content">
+            <div class="assignments-grid" *ngIf="filterAssignments(pendingAssignments).length > 0">
+              <mat-card 
+                class="assignment-card" 
+                *ngFor="let assignment of filterAssignments(pendingAssignments)" 
+                [ngClass]="getStatusClass(assignment)"
+              >
+                <mat-card-header>
+                  <mat-card-title>{{ assignment.nom }}</mat-card-title>
+                  <mat-card-subtitle>{{ getSubjectName(assignment.matiere) }}</mat-card-subtitle>
+                </mat-card-header>
+                
+                <mat-card-content>
+                  <div class="deadline-info">
+                    <mat-icon>event</mat-icon>
+                    <span>À rendre le {{ assignment.dateDeRendu | date:'dd MMMM yyyy' }}</span>
+                  </div>
+                  
+                  <div class="time-remaining" [ngClass]="getStatusClass(assignment)">
+                    {{ getDaysRemaining(assignment.dateDeRendu) }}
+                  </div>
+                  
+                  <mat-divider class="content-divider"></mat-divider>
+                  
+                  <div class="assignment-description" *ngIf="assignment.remarques">
+                    <p>{{ assignment.remarques }}</p>
+                  </div>
+                  
+                  <div class="no-description" *ngIf="!assignment.remarques">
+                    <p>Aucune description fournie</p>
+                  </div>
+                </mat-card-content>
+                
+                <mat-card-actions class="card-actions">
+                  <button mat-button color="primary" [routerLink]="['/student/submit', assignment.id]">
+                    <mat-icon>send</mat-icon> Rendre
+                  </button>
+                  <button mat-button color="accent" [routerLink]="['/assignments', assignment.id]">
+                    <mat-icon>visibility</mat-icon> Détails
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            </div>
+            
+            <div class="no-assignments" *ngIf="filterAssignments(pendingAssignments).length === 0">
+              <mat-icon>check_circle</mat-icon>
+              <h3>Aucun assignment à faire</h3>
+              <p *ngIf="searchText">Aucun résultat ne correspond à votre recherche.</p>
+              <p *ngIf="!searchText">Vous n'avez aucun assignment à rendre pour le moment.</p>
+            </div>
+          </div>
+        </mat-tab>
+        
+        <mat-tab label="En retard" [disabled]="lateAssignments.length === 0">
+        <div class="tab-content">
+            <div class="assignments-grid" *ngIf="filterAssignments(lateAssignments).length > 0">
+              <mat-card 
+                class="assignment-card late-card" 
+                *ngFor="let assignment of filterAssignments(lateAssignments)" 
+              >
+                <mat-card-header>
+                  <mat-card-title>{{ assignment.nom }}</mat-card-title>
+                  <mat-card-subtitle>{{ getSubjectName(assignment.matiere) }}</mat-card-subtitle>
+                </mat-card-header>
+                
+                <mat-card-content>
+                  <div class="deadline-info alert">
+                    <mat-icon>warning</mat-icon>
+                    <span>Date limite dépassée ({{ assignment.dateDeRendu | date:'dd MMMM yyyy' }})</span>
+                  </div>
+                  
+                  <div class="time-remaining status-late">
+                    {{ getDaysRemaining(assignment.dateDeRendu) }}
+                  </div>
+                  
+                  <mat-divider class="content-divider"></mat-divider>
+                  
+                  <div class="assignment-description" *ngIf="assignment.remarques">
+                    <p>{{ assignment.remarques }}</p>
+                  </div>
+                  
+                  <div class="no-description" *ngIf="!assignment.remarques">
+                    <p>Aucune description fournie</p>
+                  </div>
+                </mat-card-content>
+                
+                <mat-card-actions class="card-actions">
+                  <button mat-button color="warn" [routerLink]="['/student/submit', assignment.id]">
+                    <mat-icon>send</mat-icon> Rendre en retard
+                  </button>
+                  <button mat-button color="accent" [routerLink]="['/assignments', assignment.id]">
+                    <mat-icon>visibility</mat-icon> Détails
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            </div>
+            
+            <div class="no-assignments" *ngIf="filterAssignments(lateAssignments).length === 0">
+              <mat-icon>check_circle</mat-icon>
+              <h3>Aucun assignment en retard</h3>
+              <p *ngIf="searchText">Aucun résultat ne correspond à votre recherche.</p>
+              <p *ngIf="!searchText">Bravo ! Vous n'avez aucun assignment en retard.</p>
+            </div>
+          </div>
+        </mat-tab>
+        
+        <mat-tab label="Rendus" [disabled]="submittedAssignments.length === 0">
+          <div class="tab-content">
+            <div class="assignments-grid" *ngIf="filterAssignments(submittedAssignments).length > 0">
+              <mat-card 
+                class="assignment-card submitted-card" 
+                *ngFor="let assignment of filterAssignments(submittedAssignments)" 
+              >
+                <mat-card-header>
+                  <mat-card-title>{{ assignment.nom }}</mat-card-title>
+                  <mat-card-subtitle>{{ getSubjectName(assignment.matiere) }}</mat-card-subtitle>
+                </mat-card-header>
+                
+                <mat-card-content>
+                  <div class="deadline-info success">
+                    <mat-icon>check_circle</mat-icon>
+                    <span>Rendu le {{ assignment.dateDeRendu | date:'dd MMMM yyyy' }}</span>
+                  </div>
+                  
+                  <div class="grade-info" *ngIf="assignment.note">
+                    <mat-icon>grade</mat-icon>
+                    <span class="grade">Note: {{ assignment.note }}/20</span>
+                  </div>
+                  
+                  <div class="grade-info" *ngIf="!assignment.note">
+                    <mat-icon>hourglass_empty</mat-icon>
+                    <span class="no-grade">En attente de notation</span>
+                  </div>
+                  
+                  <mat-divider class="content-divider"></mat-divider>
+                  
+                  <div class="teacher-feedback" *ngIf="assignment.remarques">
+                    <h3>Commentaires du professeur:</h3>
+                    <p>{{ assignment.remarques }}</p>
+                  </div>
+                  
+                  <div class="no-feedback" *ngIf="!assignment.remarques">
+                    <p>Aucun commentaire du professeur</p>
+                  </div>
+                </mat-card-content>
+                
+                <mat-card-actions class="card-actions">
+                  <button mat-button color="accent" [routerLink]="['/assignments', assignment.id]">
+                    <mat-icon>visibility</mat-icon> Détails
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            </div>
+            
+            <div class="no-assignments" *ngIf="filterAssignments(submittedAssignments).length === 0">
+              <mat-icon>info</mat-icon>
+              <h3>Aucun assignment rendu</h3>
+              <p *ngIf="searchText">Aucun résultat ne correspond à votre recherche.</p>
+              <p *ngIf="!searchText">Vous n'avez encore rendu aucun assignment.</p>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>

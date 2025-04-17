@@ -1,0 +1,234 @@
+<div class="dashboard-container">
+    <div class="page-header">
+      <h1 class="mat-headline-4">Tableau de bord Enseignant</h1>
+    </div>
+    
+    <div class="loading-indicator" *ngIf="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Chargement de vos données...</p>
+    </div>
+    
+    <div class="dashboard-content" *ngIf="!loading">
+      <div class="stats-cards">
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-icon">
+              <mat-icon>school</mat-icon>
+            </div>
+            <div class="stat-details">
+              <span class="stat-value">{{ teacherSubjects.length }}</span>
+              <span class="stat-label">Matières enseignées</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-icon">
+              <mat-icon>assignment</mat-icon>
+            </div>
+            <div class="stat-details">
+              <span class="stat-value">{{ dashboardStats.totalAssignments }}</span>
+              <span class="stat-label">Assignments au total</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-icon">
+              <mat-icon>assignment_turned_in</mat-icon>
+            </div>
+            <div class="stat-details">
+              <span class="stat-value">{{ dashboardStats.submittedAssignments }}</span>
+              <span class="stat-label">Assignments rendus</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <mat-card class="stat-card alert-card">
+          <mat-card-content>
+            <div class="stat-icon">
+              <mat-icon>assignment_late</mat-icon>
+            </div>
+            <div class="stat-details">
+              <span class="stat-value">{{ dashboardStats.lateAssignments }}</span>
+              <span class="stat-label">Assignments en retard</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      
+      <div class="subjects-section">
+        <h2 class="section-title">Vos matières</h2>
+        
+        <div class="subjects-grid" *ngIf="teacherSubjects.length > 0">
+          <mat-card class="subject-card" *ngFor="let subject of teacherSubjects">
+            <mat-card-header>
+              <div mat-card-avatar 
+                   class="subject-header-image" 
+                   [style.background-color]="subject.color || '#3f51b5'">
+                {{ getInitials(subject.name) }}
+              </div>
+              <mat-card-title>{{ subject.name }}</mat-card-title>
+            </mat-card-header>
+            
+            <div class="subject-image" *ngIf="subject.imageUrl">
+              <img [src]="subject.imageUrl" [alt]="subject.name">
+            </div>
+            
+            <mat-card-content>
+              <p *ngIf="subject.description">{{ subject.description }}</p>
+              <p *ngIf="!subject.description" class="no-description">Aucune description</p>
+            </mat-card-content>
+            
+            <mat-card-actions>
+              <button mat-button color="primary" [routerLink]="['/teacher/assignments']" [queryParams]="{subject: subject.id}">
+                <mat-icon>assignment</mat-icon> Assignments
+              </button>
+              <button mat-button color="accent" [routerLink]="['/teacher/students']" [queryParams]="{subject: subject.id}">
+                <mat-icon>people</mat-icon> Étudiants
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+        
+        <div class="no-subjects" *ngIf="teacherSubjects.length === 0">
+          <mat-icon>info</mat-icon>
+          <p>Vous n'enseignez aucune matière pour le moment.</p>
+          <p>Contactez l'administrateur pour être assigné à des matières.</p>
+        </div>
+      </div>
+      
+      <div class="assignments-section">
+        <h2 class="section-title">Assignments récents</h2>
+        
+        <mat-tab-group>
+          <mat-tab label="À noter" [disabled]="submittedAssignments.length === 0">
+            <div class="assignment-list" *ngIf="submittedAssignments.length > 0">
+              <mat-card class="assignment-card" *ngFor="let assignment of submittedAssignments.slice(0, 5)">
+                <mat-card-header>
+                  <mat-card-title>{{ assignment.nom }}</mat-card-title>
+                  <mat-card-subtitle>
+                    Matière: {{ getSubjectName(assignment.matiere) }}
+                  </mat-card-subtitle>
+                </mat-card-header>
+                
+                <mat-card-content>
+                  <div class="assignment-meta">
+                    <div class="meta-item">
+                      <mat-icon>person</mat-icon>
+                      <span>{{ getAuthorName(assignment.auteur) }}</span>
+                    </div>
+                    
+                    <div class="meta-item">
+                      <mat-icon>event</mat-icon>
+                      <span>Rendu le {{ assignment.dateDeRendu | date:'dd/MM/yyyy' }}</span>
+                    </div>
+                  </div>
+                </mat-card-content>
+                
+                <mat-card-actions>
+                  <button mat-button color="primary" [routerLink]="['/teacher/grade', assignment.id]">
+                    <mat-icon>grade</mat-icon> Noter
+                  </button>
+                  <button mat-button color="accent" [routerLink]="['/assignments', assignment.id]">
+                    <mat-icon>visibility</mat-icon> Détails
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            </div>
+            
+            <div class="no-assignments" *ngIf="submittedAssignments.length === 0">
+              <mat-icon>info</mat-icon>
+              <p>Aucun assignment rendu à noter.</p>
+            </div>
+          </mat-tab>
+        <mat-tab label="En retard" [disabled]="lateAssignments.length === 0">
+            <div class="assignment-list" *ngIf="lateAssignments.length > 0">
+              <mat-card class="assignment-card late-card" *ngFor="let assignment of lateAssignments.slice(0, 5)">
+                <mat-card-header>
+                  <mat-card-title>{{ assignment.nom }}</mat-card-title>
+                  <mat-card-subtitle>
+                    Matière: {{ getSubjectName(assignment.matiere) }}
+                  </mat-card-subtitle>
+                </mat-card-header>
+                
+                <mat-card-content>
+                  <div class="assignment-meta">
+                    <div class="meta-item">
+                      <mat-icon>person</mat-icon>
+                      <span>{{ getAuthorName(assignment.auteur) }}</span>
+                    </div>
+                    
+                    <div class="meta-item alert-text">
+                      <mat-icon>event</mat-icon>
+                      <span>À rendre le {{ assignment.dateDeRendu | date:'dd/MM/yyyy' }}</span>
+                    </div>
+                  </div>
+                </mat-card-content>
+                
+                <mat-card-actions>
+                  <button mat-button color="accent" [routerLink]="['/assignments', assignment.id]">
+                    <mat-icon>visibility</mat-icon> Détails
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            </div>
+            
+            <div class="no-assignments" *ngIf="lateAssignments.length === 0">
+              <mat-icon>check_circle</mat-icon>
+              <p>Aucun assignment en retard. Excellent!</p>
+            </div>
+          </mat-tab>
+          
+          <mat-tab label="À venir">
+            <div class="assignment-list" *ngIf="pendingAssignments.length > 0">
+              <mat-card class="assignment-card" *ngFor="let assignment of pendingAssignments.slice(0, 5)">
+                <mat-card-header>
+                  <mat-card-title>{{ assignment.nom }}</mat-card-title>
+                  <mat-card-subtitle>
+                    Matière: {{ getSubjectName(assignment.matiere) }}
+                  </mat-card-subtitle>
+                </mat-card-header>
+                
+                <mat-card-content>
+                  <div class="assignment-meta">
+                    <div class="meta-item">
+                      <mat-icon>person</mat-icon>
+                      <span>{{ getAuthorName(assignment.auteur) }}</span>
+                    </div>
+                    
+                    <div class="meta-item">
+                      <mat-icon>event</mat-icon>
+                      <span>À rendre le {{ assignment.dateDeRendu | date:'dd/MM/yyyy' }}</span>
+                    </div>
+                  </div>
+                </mat-card-content>
+                
+                <mat-card-actions>
+                  <button mat-button color="accent" [routerLink]="['/assignments', assignment.id]">
+                    <mat-icon>visibility</mat-icon> Détails
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            </div>
+            
+            <div class="no-assignments" *ngIf="pendingAssignments.length === 0">
+              <mat-icon>info</mat-icon>
+              <p>Aucun assignment à venir.</p>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+        
+        <div class="view-all-button">
+          <button mat-raised-button color="primary" routerLink="/teacher/assignments">
+            <mat-icon>list</mat-icon> Voir tous les assignments
+          </button>
+          <button mat-raised-button color="accent" routerLink="/assignments/add">
+            <mat-icon>add</mat-icon> Créer un assignment
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>

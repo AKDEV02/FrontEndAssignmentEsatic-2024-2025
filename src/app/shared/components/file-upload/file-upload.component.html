@@ -1,0 +1,43 @@
+<div class="file-upload-container">
+    <div *ngIf="currentFile" class="progress-container">
+      <mat-progress-bar [value]="progress"></mat-progress-bar>
+      <span>{{ progress }}%</span>
+    </div>
+    
+    <div class="upload-action">
+      <label class="file-select-button">
+        <input 
+          type="file" 
+          [multiple]="multiple" 
+          [accept]="accept" 
+          (change)="selectFile($event)" 
+          style="display: none;"
+        >
+        <button mat-stroked-button color="primary" type="button">
+          <mat-icon>attach_file</mat-icon>
+          Sélectionner un fichier
+        </button>
+      </label>
+      
+      <button 
+        mat-raised-button 
+        color="primary" 
+        [disabled]="!selectedFiles" 
+        (click)="upload()" 
+        class="upload-button"
+      >
+        <mat-icon>cloud_upload</mat-icon>
+        Uploader
+      </button>
+    </div>
+    
+    <div class="message" *ngIf="message">{{ message }}</div>
+    
+    <div class="file-list" *ngIf="fileInfos.length > 0">
+      <h3>Fichiers uploadés:</h3>
+      <div *ngFor="let file of fileInfos" class="file-item">
+        <mat-icon>insert_drive_file</mat-icon>
+        <a [href]="file.url" target="_blank">{{ file.name }}</a>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,99 @@
+<div class="submit-container">
+    <div class="page-header">
+      <button mat-icon-button color="primary" (click)="onCancel()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1 class="mat-headline-4">Rendre un assignment</h1>
+    </div>
+    
+    <div class="loading-indicator" *ngIf="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Chargement des données...</p>
+    </div>
+    
+    <div class="submit-content" *ngIf="!loading && assignment">
+      <div class="assignment-details">
+        <mat-card class="details-card">
+          <mat-card-header>
+            <mat-card-title>{{ assignment.nom }}</mat-card-title>
+            <mat-card-subtitle *ngIf="subject">
+              Matière: {{ subject.name }}
+            </mat-card-subtitle>
+          </mat-card-header>
+          
+          <mat-card-content>
+            <div class="status-banner" [ngClass]="{'late-banner': isLate(), 'ontime-banner': !isLate()}">
+              <mat-icon>{{ isLate() ? 'warning' : 'event' }}</mat-icon>
+              <span>
+                {{ isLate() ? 'En retard - à rendre le ' : 'À rendre avant le ' }}
+                {{ assignment.dateDeRendu | date:'dd MMMM yyyy' }}
+              </span>
+            </div>
+            
+            <mat-divider class="section-divider"></mat-divider>
+            
+            <div class="detail-content" *ngIf="assignment.remarques">
+              <h3 class="section-title">Instructions</h3>
+              <p class="instructions">{{ assignment.remarques }}</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      
+      <div class="submission-section">
+        <mat-card class="submission-card">
+          <mat-card-header>
+            <mat-card-title>Soumettre votre travail</mat-card-title>
+          </mat-card-header>
+          
+          <mat-card-content>
+            <form [formGroup]="submitForm" (ngSubmit)="onSubmit()">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Commentaire</mat-label>
+                <textarea matInput formControlName="comment" rows="4" placeholder="Ajoutez un commentaire pour votre professeur"></textarea>
+                <mat-error *ngIf="submitForm.get('comment')?.hasError('required')">
+                  Veuillez ajouter un commentaire
+                </mat-error>
+              </mat-form-field>
+              
+              <div class="file-upload-section">
+                <h3 class="upload-title">Fichiers à soumettre</h3>
+                <p class="upload-instructions">
+                  Formats acceptés: PDF, DOC, DOCX, ZIP, etc.
+                </p>
+                
+                <app-file-upload 
+                  uploadType="assignment" 
+                  accept=".pdf,.doc,.docx,.zip,.rar,.7z"
+                  [multiple]="true"
+                  (uploaded)="onFileUploaded($event)">
+                </app-file-upload>
+              </div>
+              
+              <div class="form-actions">
+                <button mat-button type="button" (click)="onCancel()">Annuler</button>
+                <button 
+                  mat-raised-button 
+                  color="primary" 
+                  type="submit" 
+                  [disabled]="submitForm.invalid || uploadedFiles.length === 0 || submitting"
+                >
+                  <mat-spinner diameter="20" *ngIf="submitting" class="spinner"></mat-spinner>
+                  <span *ngIf="!submitting">Soumettre l'assignment</span>
+                </button>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+    
+    <div class="not-found" *ngIf="!loading && !assignment">
+      <mat-icon>error_outline</mat-icon>
+      <h2>Assignment non trouvé</h2>
+      <p>L'assignment que vous recherchez n'existe pas ou a été supprimé.</p>
+      <button mat-raised-button color="primary" routerLink="/student/assignments">
+        Retour à la liste des assignments
+      </button>
+    </div>
+  </div>

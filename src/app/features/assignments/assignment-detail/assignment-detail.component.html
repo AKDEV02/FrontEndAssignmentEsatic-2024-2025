@@ -1,0 +1,112 @@
+<div class="detail-container" *ngIf="!loading && assignment">
+    <div class="page-header">
+      <button mat-icon-button color="primary" routerLink="/assignments">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1 class="mat-headline-4">{{ assignment.nom }}</h1>
+    </div>
+    
+    <div class="detail-card-container">
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <div class="assignment-header">
+            <div class="status-chip" [ngClass]="getStatusClass()">
+              {{ getStatusText() }}
+            </div>
+            
+            <div class="assignment-date">
+              <mat-icon>event</mat-icon>
+              <span>À rendre le {{ assignment.dateDeRendu | date:'dd MMMM yyyy' }}</span>
+            </div>
+          </div>
+          
+          <mat-divider></mat-divider>
+          
+          <div class="assignment-details">
+            <div class="detail-section">
+              <h3 class="section-title">Informations générales</h3>
+              
+              <div class="detail-item">
+                <span class="detail-label">Matière :</span>
+                <span class="detail-value">{{ subject?.name || 'Non spécifiée' }}</span>
+              </div>
+              
+              <div class="detail-item">
+                <span class="detail-label">Auteur :</span>
+                <span class="detail-value">{{ assignment.auteur || 'Non spécifié' }}</span>
+              </div>
+              
+              <div class="detail-item">
+                <span class="detail-label">Note :</span>
+                <span class="detail-value" *ngIf="assignment.note">{{ assignment.note }}/20</span>
+                <span class="detail-value no-value" *ngIf="!assignment.note">Non noté</span>
+              </div>
+            </div>
+            
+            <div class="detail-section" *ngIf="assignment.remarques">
+              <h3 class="section-title">Remarques</h3>
+              <p class="detail-remarks">{{ assignment.remarques }}</p>
+            </div>
+            
+            <div class="detail-section" *ngIf="subject">
+              <h3 class="section-title">À propos de la matière</h3>
+              
+              <div class="subject-info">
+                <div class="subject-image" *ngIf="subject.imageUrl">
+                  <img [src]="subject?.imageUrl" [alt]="subject?.name">
+                </div>
+                
+                <div class="subject-details">
+                  <div class="detail-item">
+                    <span class="detail-label">Professeur :</span>
+                    <span class="detail-value" *ngIf="subject.teacher && typeof subject.teacher === 'object'">
+                      {{ subject.teacher.firstName }} {{ subject.teacher.lastName }}
+                    </span>
+                    <span class="detail-value" *ngIf="!subject.teacher || typeof subject.teacher !== 'object'">
+                      Non spécifié
+                    </span>
+                  </div>
+                  
+                  <div class="detail-item" *ngIf="subject.description">
+                    <span class="detail-label">Description :</span>
+                    <span class="detail-value">{{ subject.description }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+        
+        <mat-card-actions>
+          <button mat-raised-button color="primary" *ngIf="!assignment.rendu && authService.isAdmin() && assignment.note" (click)="markAsSubmitted()">
+            <mat-icon>done</mat-icon>
+            Marquer comme rendu
+          </button>
+          
+          <button mat-raised-button color="accent" *ngIf="authService.isAdmin()" [routerLink]="['/assignments', assignment.id, 'edit']">
+            <mat-icon>edit</mat-icon>
+            Modifier
+          </button>
+          
+          <button mat-raised-button color="warn" *ngIf="authService.isAdmin()" (click)="deleteAssignment()">
+            <mat-icon>delete</mat-icon>
+            Supprimer
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+  
+  <div class="loading-indicator" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Chargement des détails de l'assignment...</p>
+  </div>
+  
+  <div class="not-found" *ngIf="!loading && !assignment">
+    <mat-icon>error_outline</mat-icon>
+    <h2>Assignment non trouvé</h2>
+    <p>L'assignment que vous recherchez n'existe pas ou a été supprimé.</p>
+    <button mat-raised-button color="primary" routerLink="/assignments">
+      Retour à la liste des assignments
+    </button>
+  </div>

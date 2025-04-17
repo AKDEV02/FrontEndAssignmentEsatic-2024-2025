@@ -1,0 +1,107 @@
+<div class="grade-container">
+    <div class="page-header">
+      <button mat-icon-button color="primary" (click)="onCancel()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1 class="mat-headline-4">Noter l'assignment</h1>
+    </div>
+    
+    <div class="loading-indicator" *ngIf="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Chargement des données...</p>
+    </div>
+    
+    <div class="grade-content" *ngIf="!loading && assignment">
+      <div class="assignment-details">
+        <mat-card class="details-card">
+          <mat-card-header>
+            <mat-card-title>{{ assignment.nom }}</mat-card-title>
+            <mat-card-subtitle *ngIf="subject">
+              Matière: {{ subject.name }}
+            </mat-card-subtitle>
+          </mat-card-header>
+          
+          <mat-card-content>
+            <div class="detail-item">
+              <span class="detail-label">Étudiant:</span>
+              <span class="detail-value">{{ getAuthorName() }}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">Date de rendu:</span>
+              <span class="detail-value">{{ assignment.dateDeRendu | date:'dd MMMM yyyy' }}</span>
+            </div>
+            
+            <mat-divider class="section-divider"></mat-divider>
+            
+            <h3 class="section-title">Fichiers soumis</h3>
+            
+            <!-- Ici normalement, on afficherait les fichiers soumis par l'étudiant -->
+            <div class="uploads-list" *ngIf="uploadedFiles.length > 0">
+              <div class="file-item" *ngFor="let file of uploadedFiles">
+                <mat-icon>insert_drive_file</mat-icon>
+                <a [href]="file.url" target="_blank">{{ file.name }}</a>
+              </div>
+            </div>
+            
+            <div class="no-files" *ngIf="uploadedFiles.length === 0">
+              <p>Aucun fichier n'a été soumis pour cet assignment.</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      
+      <div class="grading-section">
+        <mat-card class="grade-card">
+          <mat-card-header>
+            <mat-card-title>Évaluation</mat-card-title>
+          </mat-card-header>
+          
+          <mat-card-content>
+            <form [formGroup]="gradeForm" (ngSubmit)="onSubmit()">
+              <div class="grade-slider">
+                <label>Note (sur 20):</label>
+                <mat-slider
+                  color="primary"
+                  [min]="0"
+                  [max]="20"
+                  [step]="0.5"
+                  [discrete]="true"
+                  [showTickMarks]="true"
+                  [displayWith]="formatSliderLabel"
+                >
+                  <input matSliderThumb formControlName="note">
+                </mat-slider>
+                <div class="grade-value">{{ gradeForm.value.note || 0 }}/20</div>
+              </div>
+              
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Remarques et commentaires</mat-label>
+                <textarea matInput formControlName="remarques" rows="6" placeholder="Saisissez vos remarques et commentaires pour l'étudiant"></textarea>
+                <mat-error *ngIf="gradeForm.get('remarques')?.hasError('required')">
+                  Veuillez fournir des remarques pour l'étudiant
+                </mat-error>
+              </mat-form-field>
+              
+              <div class="form-actions">
+                <button mat-button type="button" (click)="onCancel()">Annuler</button>
+                <button mat-raised-button color="primary" type="submit" [disabled]="gradeForm.invalid || submitting">
+                  <mat-spinner diameter="20" *ngIf="submitting" class="spinner"></mat-spinner>
+                  <span *ngIf="!submitting">Enregistrer la note</span>
+                </button>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+    
+    <div class="not-found" *ngIf="!loading && !assignment">
+      <mat-icon>error_outline</mat-icon>
+      <h2>Assignment non trouvé</h2>
+      <p>L'assignment que vous recherchez n'existe pas ou a été supprimé.</p>
+      <button mat-raised-button color="primary" routerLink="/teacher/assignments">
+        Retour à la liste des assignments
+      </button>
+    </div>
+  </div>

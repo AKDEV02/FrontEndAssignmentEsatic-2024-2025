@@ -1,0 +1,139 @@
+.assignments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.assignment-card {
+  border-radius: 8px;
+  transition: transform 0.3s, box-shadow 0.3s;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.assignment-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.assignment-card.status-late,
+.late-card {
+  border-left: 4px solid #f44336;
+}
+
+.assignment-card.status-pending {
+  border-left: 4px solid #ff8c00;
+}
+
+.assignment-card.status-submitted,
+.submitted-card {
+  border-left: 4px solid #4caf50;
+}
+
+.deadline-info {
+  display: flex;
+  align-items: center;
+  margin: 15px 0;
+  color: #000000;
+}
+
+.deadline-info mat-icon {
+  margin-right: 8px;
+  color: #666666;
+}
+
+.deadline-info.alert mat-icon {
+  color: #f44336;
+}
+
+.deadline-info.success mat-icon {
+  color: #4caf50;
+}
+
+.time-remaining {
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 15px;
+  color: #000000;
+}
+
+.time-remaining.status-submitted {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #000000;
+}
+
+.time-remaining.status-pending {
+  background-color: rgba(255, 140, 0, 0.1);
+  color: #000000;
+}
+
+.time-remaining.status-late {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #000000;
+}
+
+.subject-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.subject-filter mat-form-field {
+  min-width: 250px;
+}
+
+.submission-guide {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.submission-guide-title {
+  color: #ff8c00;
+  font-weight: 500;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.submission-guide-title mat-icon {
+  margin-right: 8px;
+}
+
+.submissions-list {
+  margin-top: 16px;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.file-item:hover {
+  background-color: #f0f0f0;
+}
+
+.file-item mat-icon {
+  margin-right: 12px;
+  color: #ff8c00;
+}
+
+.file-item a {
+  color: #ff8c00;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.file-item a:hover {
+  text-decoration: underline;
+}

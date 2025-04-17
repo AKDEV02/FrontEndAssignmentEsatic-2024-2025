@@ -1,0 +1,101 @@
+<div class="students-container">
+    <div class="page-header">
+      <h1 class="mat-headline-4">Étudiants par matière</h1>
+    </div>
+    
+    <div class="loading-indicator" *ngIf="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Chargement des données...</p>
+    </div>
+    
+    <div class="students-content" *ngIf="!loading">
+      <div class="subjects-list">
+        <h2 class="section-title">Mes matières</h2>
+        
+        <mat-list *ngIf="teacherSubjects.length > 0" class="subjects-nav">
+          <mat-list-item 
+            *ngFor="let subject of teacherSubjects" 
+            [class.active]="selectedSubject?.id === subject.id"
+            (click)="selectSubject(subject)"
+          >
+            <div class="subject-item">
+              <div class="subject-color" [style.background-color]="subject.color || '#3f51b5'"></div>
+              <span class="subject-name">{{ subject.name }}</span>
+            </div>
+          </mat-list-item>
+        </mat-list>
+        
+        <div class="no-subjects" *ngIf="teacherSubjects.length === 0">
+          <mat-icon>warning</mat-icon>
+          <p>Vous n'êtes assigné à aucune matière</p>
+        </div>
+      </div>
+      
+      <div class="students-view">
+        <mat-card *ngIf="selectedSubject" class="students-card">
+          <mat-card-header>
+            <mat-card-title>{{ selectedSubject.name }}</mat-card-title>
+            <mat-card-subtitle *ngIf="selectedSubject.description">
+              {{ selectedSubject.description }}
+            </mat-card-subtitle>
+          </mat-card-header>
+          
+          <mat-card-content>
+            <div class="search-container">
+              <mat-form-field appearance="outline" class="search-field">
+                <mat-label>Rechercher un étudiant</mat-label>
+                <input matInput [(ngModel)]="searchText" placeholder="Nom, email...">
+                <mat-icon matSuffix>search</mat-icon>
+              </mat-form-field>
+            </div>
+            
+            <div class="students-list-container" *ngIf="filterStudents().length > 0">
+              <table mat-table [dataSource]="filterStudents()" class="students-table">
+                <!-- Nom Column -->
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef>Nom</th>
+                  <td mat-cell *matCellDef="let student" class="name-cell">
+                    <div class="student-avatar">
+                      <div class="avatar-placeholder">{{ getInitials(student) }}</div>
+                    </div>
+                    <div class="student-info">
+                      <div class="student-name">{{ student.firstName }} {{ student.lastName }}</div>
+                      <div class="student-username">{{ student.username }}</div>
+                    </div>
+                  </td>
+                </ng-container>
+                
+                <!-- Email Column -->
+                <ng-container matColumnDef="email">
+                  <th mat-header-cell *matHeaderCellDef>Email</th>
+                  <td mat-cell *matCellDef="let student">{{ student.email }}</td>
+                </ng-container>
+                
+                <!-- Status Column -->
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef>Statut</th>
+                  <td mat-cell *matCellDef="let student">
+                    <span class="status-badge status-active">Inscrit</span>
+                  </td>
+                </ng-container>
+                
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table>
+            </div>
+            
+            <div class="no-students" *ngIf="filterStudents().length === 0">
+              <mat-icon>info</mat-icon>
+              <p *ngIf="searchText">Aucun étudiant ne correspond à votre recherche.</p>
+              <p *ngIf="!searchText">Aucun étudiant n'est inscrit à cette matière.</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <div class="select-subject" *ngIf="!selectedSubject && teacherSubjects.length > 0">
+          <mat-icon>arrow_back</mat-icon>
+          <p>Sélectionnez une matière pour voir les étudiants inscrits</p>
+        </div>
+      </div>
+    </div>
+  </div>

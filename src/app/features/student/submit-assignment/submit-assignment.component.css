@@ -1,0 +1,137 @@
+.assignments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+  }
+  
+  .assignment-card {
+    border-radius: var(--border-radius);
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    background-color: var(--card-background);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+  }
+  
+  .assignment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--box-shadow-hover);
+  }
+  
+  .assignment-card.status-late,
+  .late-card {
+    border-left: 4px solid var(--error-color);
+  }
+  
+  .assignment-card.status-pending {
+    border-left: 4px solid var(--warning-color);
+  }
+  
+  .assignment-card.status-submitted,
+  .submitted-card {
+    border-left: 4px solid var(--success-color);
+  }
+  
+  .deadline-info {
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+  }
+  
+  .deadline-info mat-icon {
+    margin-right: 8px;
+    color: var(--text-secondary);
+  }
+  
+  .deadline-info.alert mat-icon {
+    color: var(--error-color);
+  }
+  
+  .deadline-info.success mat-icon {
+    color: var(--success-color);
+  }
+  
+  .time-remaining {
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 15px;
+  }
+  
+  .time-remaining.status-submitted {
+    background-color: var(--success-light);
+    color: var(--success-color);
+  }
+  
+  .time-remaining.status-pending {
+    background-color: var(--warning-light);
+    color: var(--warning-color);
+  }
+  
+  .time-remaining.status-late {
+    background-color: var(--error-light);
+    color: var(--error-color);
+  }
+  
+  .subject-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .subject-filter mat-form-field {
+    min-width: 250px;
+  }
+  
+  .submission-guide {
+    background-color: #f9f9f9;
+    border-radius: var(--border-radius);
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .submission-guide-title {
+    color: var(--primary-color);
+    font-weight: 500;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .submission-guide-title mat-icon {
+    margin-right: 8px;
+  }
+  
+  .submissions-list {
+    margin-top: 16px;
+  }
+  
+  .file-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    transition: background-color var(--transition-speed);
+  }
+  
+  .file-item:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .file-item mat-icon {
+    margin-right: 12px;
+    color: var(--primary-color);
+  }
+  
+  .file-item a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .file-item a:hover {
+    text-decoration: underline;
+  }

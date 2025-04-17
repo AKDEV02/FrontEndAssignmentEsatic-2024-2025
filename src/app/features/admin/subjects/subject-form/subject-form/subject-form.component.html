@@ -1,0 +1,60 @@
+<div class="form-container">
+    <div class="page-header">
+      <button mat-icon-button color="primary" (click)="onCancel()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1 class="mat-headline-4">{{ isEditMode ? 'Modifier la matière' : 'Ajouter une matière' }}</h1>
+    </div>
+    
+    <div class="loading-indicator" *ngIf="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Chargement...</p>
+    </div>
+    
+    <mat-card class="form-card" *ngIf="!loading">
+      <mat-card-content>
+        <form [formGroup]="subjectForm" (ngSubmit)="onSubmit()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nom de la matière</mat-label>
+            <input matInput formControlName="name" placeholder="Entrez le nom de la matière">
+            <mat-error *ngIf="subjectForm.get('name')?.hasError('required')">
+              Le nom est requis
+            </mat-error>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="3" placeholder="Description de la matière"></textarea>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Professeur</mat-label>
+            <mat-select formControlName="teacher">
+              <mat-option [value]="null">Aucun</mat-option>
+              <mat-option *ngFor="let teacher of teachers" [value]="teacher.id">
+                {{ teacher.firstName }} {{ teacher.lastName }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>URL de l'image</mat-label>
+            <input matInput formControlName="imageUrl" placeholder="URL de l'image représentant la matière">
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Couleur</mat-label>
+            <input matInput formControlName="color" placeholder="Code hexadécimal (ex: #3f51b5)">
+          </mat-form-field>
+          
+          <div class="form-actions">
+            <button mat-button type="button" (click)="onCancel()">Annuler</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="subjectForm.invalid || saveLoading">
+              <mat-spinner diameter="20" *ngIf="saveLoading" class="spinner"></mat-spinner>
+              <span *ngIf="!saveLoading">{{ isEditMode ? 'Mettre à jour' : 'Créer' }}</span>
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>

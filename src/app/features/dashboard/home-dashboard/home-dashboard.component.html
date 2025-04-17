@@ -1,0 +1,187 @@
+<div class="dashboard-container">
+    <div class="dashboard-header">
+      <h1 class="mat-headline-4">Tableau de bord</h1>
+      <p class="mat-body-1">
+        Bienvenue {{ authService.getCurrentUser()?.firstName }} {{ authService.getCurrentUser()?.lastName }}
+      </p>
+    </div>
+    
+    <div class="loading-indicator" *ngIf="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Chargement des données...</p>
+    </div>
+    
+    <div class="dashboard-content" *ngIf="!loading">
+      <!-- Cards de statistiques -->
+      <div class="stats-container">
+        <mat-card class="stats-card">
+          <mat-card-content>
+            <div class="stat-item">
+              <div class="stat-icon total-icon">
+                <mat-icon>assignment</mat-icon>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Total des assignments</span>
+                <span class="stat-value">{{ totalAssignments }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <mat-card class="stats-card">
+          <mat-card-content>
+            <div class="stat-item">
+              <div class="stat-icon submitted-icon">
+                <mat-icon>done_all</mat-icon>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Assignments rendus</span>
+                <span class="stat-value">{{ totalRendu }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <mat-card class="stats-card">
+          <mat-card-content>
+            <div class="stat-item">
+              <div class="stat-icon pending-icon">
+                <mat-icon>pending_actions</mat-icon>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Assignments non rendus</span>
+                <span class="stat-value">{{ totalNonRendu }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      
+      <!-- Graphique et Tableau -->
+      <div class="chart-and-table">
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title>État des assignments</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="chart-container">
+              <ngx-charts-pie-chart
+                [view]="[500, 300]"
+                [results]="chartData"
+                [gradient]="true"
+                [labels]="true"
+                [doughnut]="true"
+                [legend]="true"
+                [legendPosition]="legendPosition"
+                [scheme]="colorScheme">
+              </ngx-charts-pie-chart>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <mat-card class="table-card">
+          <mat-card-header>
+            <mat-card-title>Assignments récents</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <table mat-table [dataSource]="recentAssignments" class="assignments-table">
+              <!-- Nom Column -->
+              <ng-container matColumnDef="nom">
+                <th mat-header-cell *matHeaderCellDef>Nom</th>
+                <td mat-cell *matCellDef="let assignment">{{ assignment.nom }}</td>
+              </ng-container>
+              
+              <!-- Matière Column -->
+              <ng-container matColumnDef="matiere">
+                <th mat-header-cell *matHeaderCellDef>Matière</th>
+                <td mat-cell *matCellDef="let assignment">
+                  {{ assignment.matiere?.name || 'Non spécifiée' }}
+                </td>
+              </ng-container>
+              
+              <!-- Date de Rendu Column -->
+              <ng-container matColumnDef="dateDeRendu">
+                <th mat-header-cell *matHeaderCellDef>Date de rendu</th>
+                <td mat-cell *matCellDef="let assignment">
+                  {{ assignment.dateDeRendu | date:'dd/MM/yyyy' }}
+                </td>
+              </ng-container>
+              
+              <!-- Auteur Column -->
+              <ng-container matColumnDef="auteur">
+                <th mat-header-cell *matHeaderCellDef>Auteur</th>
+                <td mat-cell *matCellDef="let assignment">
+                  {{ assignment.auteur?.username || assignment.auteur || 'Non spécifié' }}
+                </td>
+              </ng-container>
+              
+              <!-- État Column -->
+              <ng-container matColumnDef="rendu">
+                <th mat-header-cell *matHeaderCellDef>État</th>
+                <td mat-cell *matCellDef="let assignment">
+                  <span class="status-badge" [ngClass]="assignment.rendu ? 'status-submitted' : 'status-pending'">
+                    {{ assignment.rendu ? 'Rendu' : 'Non rendu' }}
+                  </span>
+                </td>
+              </ng-container>
+              
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let assignment">
+                  <button mat-icon-button [routerLink]="['/assignments', assignment._id]" matTooltip="Voir les détails">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                  <button *ngIf="authService.isAdmin()" mat-icon-button [routerLink]="['/assignments', assignment._id, 'edit']" matTooltip="Modifier">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+              
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+            
+            <div class="no-data-message" *ngIf="recentAssignments.length === 0">
+              <mat-icon>info</mat-icon>
+              <span>Aucun assignment récent à afficher.</span>
+            </div>
+            
+            <div class="view-all-button">
+              <a mat-button color="primary" routerLink="/assignments">Voir tous les assignments</a>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      
+      <!-- Assignments en attente -->
+      <mat-card class="pending-card">
+        <mat-card-header>
+          <mat-card-title>Assignments à rendre prochainement</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-list>
+            <mat-list-item *ngFor="let assignment of pendingAssignments">
+              <div matListItemTitle>{{ assignment.nom }}</div>
+              <div matListItemLine>
+                <!-- <span>{{ assignment.matiere?.name || 'Non spécifiée' }}</span> -->
+                <span class="deadline" [ngClass]="{'urgent': isUrgent(assignment.dateDeRendu)}">
+                  À rendre le {{ assignment.dateDeRendu | date:'dd/MM/yyyy' }}
+                </span>
+              </div>
+              <div matListItemMeta>
+                <button mat-icon-button [routerLink]="['/assignments', assignment.id]">
+                  <mat-icon>arrow_forward</mat-icon>
+                </button>
+              </div>
+            </mat-list-item>
+          </mat-list>
+          
+          <div class="no-data-message" *ngIf="pendingAssignments.length === 0">
+            <mat-icon>check_circle</mat-icon>
+            <span>Vous êtes à jour ! Aucun assignment en attente.</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
