@@ -14,6 +14,7 @@
           "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": "dist/front-end-assignment-esatic-kone-ariel-bamba-kader2024-2025",
+            "baseHref": "/",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
