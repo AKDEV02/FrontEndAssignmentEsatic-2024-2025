@@ -10,5 +10,12 @@ export const TEACHER_ROUTES: Routes = [
   { path: '', component: TeacherDashboardComponent, canActivate: [AuthGuard, TeacherGuard] },
   { path: 'assignments', component: TeacherAssignmentsComponent, canActivate: [AuthGuard, TeacherGuard] },
   { path: 'students', component: StudentListComponent, canActivate: [AuthGuard, TeacherGuard] },
-  { path: 'grade/:id', component: GradeAssignmentComponent, canActivate: [AuthGuard, TeacherGuard] }
+  { 
+    path: 'grade/:id', 
+    component: GradeAssignmentComponent, 
+    canActivate: [AuthGuard, TeacherGuard],
+    data: {
+      prerender: false
+    }
+  }
 ];

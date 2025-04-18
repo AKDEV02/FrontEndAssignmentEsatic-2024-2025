@@ -10,10 +10,24 @@ import { AdminGuard } from '../../core/guards/admin.guard';
 export const ADMIN_ROUTES: Routes = [
   { path: 'subjects', component: SubjectListComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'subjects/add', component: SubjectFormComponent, canActivate: [AuthGuard, AdminGuard] },
-  { path: 'subjects/:id/edit', component: SubjectFormComponent, canActivate: [AuthGuard, AdminGuard] },
+  { 
+    path: 'subjects/:id/edit', 
+    component: SubjectFormComponent, 
+    canActivate: [AuthGuard, AdminGuard],
+    data: {
+      prerender: false
+    }
+  },
   { path: 'teachers', component: TeacherListComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'teachers/add', component: TeacherFormComponent, canActivate: [AuthGuard, AdminGuard] },
-  { path: 'teachers/:id/edit', component: TeacherFormComponent, canActivate: [AuthGuard, AdminGuard] },
+  { 
+    path: 'teachers/:id/edit', 
+    component: TeacherFormComponent, 
+    canActivate: [AuthGuard, AdminGuard],
+    data: {
+      prerender: false
+    }
+  },
   { path: 'users', component: UserListComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: '', redirectTo: 'subjects', pathMatch: 'full' }
 ];
