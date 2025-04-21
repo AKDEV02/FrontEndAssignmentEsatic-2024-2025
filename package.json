@@ -2,13 +2,14 @@
   "name": "front-end-assignment-esatic-kone-ariel-bamba-kader2024-2025",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr:FrontEndAssignmentEsatic-KoneAriel-BambaKader2024-2025": "node dist/front-end-assignment-esatic-kone-ariel-bamba-kader2024-2025/server/server.mjs"
-  },
+  "ng": "ng",
+  "start": "ng serve",
+  "build": "ng build",
+  "build:ssr": "ng build --configuration production && ng run FrontEndAssignmentEsatic-KoneAriel-BambaKader2024-2025:server:production",
+  "start:ssr": "node dist/front-end-assignment-esatic-kone-ariel-bamba-kader2024-2025/server/server.mjs",
+  "serve:ssr": "ng run FrontEndAssignmentEsatic-KoneAriel-BambaKader2024-2025:serve-ssr",
+  "prerender": "ng run FrontEndAssignmentEsatic-KoneAriel-BambaKader2024-2025:prerender"
+},
   "private": true,
   "dependencies": {
     "@angular/cdk": "^19.2.9",
