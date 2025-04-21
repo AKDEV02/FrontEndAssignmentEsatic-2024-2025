@@ -11,10 +11,10 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "moduleResolution": "bundler",  // Garde "bundler"
+    "moduleResolution": "NodeNext",  // ModuleResolution doit être NodeNext si module est NodeNext
     "importHelpers": true,
-    "target": "ES2022",  // Module set to es2022 (ou esnext)
-    "module": "ES2022"  // Doit être au minimum es2015
+    "target": "ES2022",
+    "module": "NodeNext"  // Module set à NodeNext
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
