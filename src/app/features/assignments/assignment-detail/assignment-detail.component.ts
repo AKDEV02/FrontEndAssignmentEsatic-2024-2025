@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 // Models and Services
 import { Assignment } from '../../../core/models/assignment';
@@ -33,9 +34,10 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
     MatDividerModule,
     MatProgressSpinnerModule,
     MatDialogModule,
-    ConfirmDialogComponent
+    MatTooltipModule,
+    // ConfirmDialogComponent
   ],
-  templateUrl:'./assignment-detail.component.html',
+  templateUrl: './assignment-detail.component.html',
   styleUrls: ['./assignment-detail.component.css']
 })
 export class AssignmentDetailComponent implements OnInit {
@@ -50,6 +52,7 @@ export class AssignmentDetailComponent implements OnInit {
   assignment: Assignment | null = null;
   subject: Subject | null = null;
   loading = true;
+  error: string | null = null;
   
   ngOnInit(): void {
     this.loadAssignment();
@@ -64,24 +67,29 @@ export class AssignmentDetailComponent implements OnInit {
       return;
     }
     
+    this.loading = true;
+    this.error = null;
+    
     this.assignmentsService.getAssignment(assignmentId).subscribe({
       next: (assignment) => {
         this.assignment = assignment;
         
-        // Récupérer les infos de la matière si c'est juste un ID
-        if (this.assignment && typeof this.assignment.matiere === 'string') {
-          this.loadSubjectDetails(this.assignment.matiere);
-        } else if (this.assignment && typeof this.assignment.matiere === 'object' && this.assignment.matiere) {
-          this.subject = this.assignment.matiere;
+        // Charger les détails de la matière si nécessaire
+        if (this.assignment?.matiere) {
+          if (typeof this.assignment.matiere === 'string') {
+            this.loadSubjectDetails(this.assignment.matiere);
+          } else {
+            this.subject = this.assignment.matiere;
+          }
         }
         
         this.loading = false;
       },
       error: (error) => {
         console.error('Erreur lors du chargement de l\'assignment', error);
-        this.notificationService.error('Impossible de charger les détails de l\'assignment');
+        this.error = 'Impossible de charger les détails de l\'assignment';
         this.loading = false;
-        this.router.navigate(['/assignments']);
+        this.notificationService.error(this.error);
       }
     });
   }
@@ -93,6 +101,7 @@ export class AssignmentDetailComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erreur lors du chargement des détails de la matière', error);
+       // this.notificationService.warning('Impossible de charger les détails de la matière');
       }
     });
   }
@@ -100,25 +109,34 @@ export class AssignmentDetailComponent implements OnInit {
   markAsSubmitted(): void {
     if (!this.assignment) return;
     
-    // Vérifier si une note est attribuée
-    if (!this.assignment.note) {
-      this.notificationService.error('Impossible de marquer comme rendu : aucune note attribuée');
-      return;
-    }
-    
-    const updatedAssignment = {
-      ...this.assignment,
-      rendu: true
-    };
-    
-    this.assignmentsService.updateAssignment(updatedAssignment).subscribe({
-      next: () => {
-        this.notificationService.success('Assignment marqué comme rendu');
-        this.loadAssignment();
-      },
-      error: (error) => {
-        console.error('Erreur lors de la mise à jour', error);
-        this.notificationService.error('Impossible de mettre à jour l\'assignment');
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Confirmer la soumission',
+        message: 'Êtes-vous sûr de vouloir marquer cet assignment comme rendu ?',
+        confirmText: 'Confirmer',
+        cancelText: 'Annuler'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && this.assignment) {
+        const updatedAssignment = {
+          ...this.assignment,
+          rendu: true,
+          dateDeRendu: new Date() // Mettre à jour la date de rendu
+        };
+        
+        this.assignmentsService.updateAssignment(updatedAssignment).subscribe({
+          next: () => {
+            this.notificationService.success('Assignment marqué comme rendu avec succès');
+            this.loadAssignment(); // Recharger les données
+          },
+          error: (error) => {
+            console.error('Erreur lors de la mise à jour', error);
+            this.notificationService.error('Impossible de mettre à jour l\'assignment');
+          }
+        });
       }
     });
   }
@@ -130,7 +148,7 @@ export class AssignmentDetailComponent implements OnInit {
       width: '400px',
       data: {
         title: 'Confirmer la suppression',
-        message: 'Êtes-vous sûr de vouloir supprimer cet assignment ?',
+        message: 'Êtes-vous sûr de vouloir supprimer définitivement cet assignment ?',
         confirmText: 'Supprimer',
         cancelText: 'Annuler'
       }
@@ -150,6 +168,12 @@ export class AssignmentDetailComponent implements OnInit {
         });
       }
     });
+  }
+
+  editAssignment(): void {
+    if (this.assignment) {
+      this.router.navigate(['/assignments', this.assignment.id, 'edit']);
+    }
   }
 
   getStatusClass(): string {
@@ -184,5 +208,22 @@ export class AssignmentDetailComponent implements OnInit {
         return 'À rendre';
       }
     }
+  }
+
+  canEdit(): boolean {
+    if (!this.assignment) return false;
+    return this.authService.isAdmin() || 
+           (this.authService.isTeacher() && !this.assignment.rendu);
+  }
+
+  canDelete(): boolean {
+    return this.authService.isAdmin();
+  }
+
+  canMarkAsSubmitted(): boolean {
+    if (!this.assignment) return false;
+    return this.authService.isStudent() && 
+           !this.assignment.rendu && 
+           this.assignment.note !== undefined;
   }
 }

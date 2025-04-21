@@ -45,7 +45,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatDialogModule,
-    ConfirmDialogComponent
+    // ConfirmDialogComponent
   ],
   templateUrl: './assignment-list.component.html',
   styleUrls: ['./assignment-list.component.css']
@@ -90,7 +90,7 @@ export class AssignmentListComponent implements OnInit {
   loadAssignments(filterSubject: boolean = false): void {
     this.loading = true;
     
-    const page = this.currentPage + 1; // API pagination starts from 1
+    const page = this.currentPage + 1; 
     
     this.assignmentsService.getAssignments(page, this.pageSize)
       .subscribe({
