@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://backendassignmentesatic-2024-2025-2.onrender.com/api'
+    apiUrl: 'https://backendassignmentesatickonebamba-2024.onrender.com/api'
   };
   

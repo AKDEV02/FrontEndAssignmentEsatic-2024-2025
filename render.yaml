@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: front-end-assignment-esatic
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist/front-end-assignment-esatic-kone-ariel-bamba-kader2024-2025
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
